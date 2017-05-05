@@ -44,7 +44,17 @@ export default class extends Phaser.State {
     if (this.cursor.left.isDown) {
       this.player.body.velocity.x = -100 //TODO moure a la dreta + colisió amb les parets + inèrcia per parar
       this.player.frame = 2
+    } else {
+      this.player.body.velocity.x = 0
     }
+
+    if (this.cursor.up.isDown) {
+      this.jumpPlayer()
+    }
+  }
+
+  jumpPlayer () {
+      this.player.body.velocity.y = -220
   }
 
   render () {
