@@ -1,6 +1,6 @@
 /* globals __DEV__ */
 import Phaser from 'phaser'
-import Mushroom from '../sprites/Mushroom'
+import Player from '../sprites/Player'
 
 export default class extends Phaser.State {
   init () {}
@@ -16,11 +16,17 @@ export default class extends Phaser.State {
 
   create () {
     this.game.physics.startSystem(Phaser.Physics.ARCADE)
-    this.player = this.game.add.sprite(350, 101, 'player')
+    // this.player = this.game.add.sprite(350, 101, 'player')
+    this.player = new Player({
+        game: this.game,
+        x: 350,
+        y: 101,
+        asset: 'player'
+    })
+    this.game.add.existing(this.player)
 
-    this.ground = this.game.add.sprite(760/2-160,400/2,'ground')
-    this.wall1 = this.game.add.sprite(760/2-160,400/2-80,'wall')
-    this.wall2 = this.game.add.sprite(760/2+140,400/2-80,'wall')
+    this.loadlevel()
+
     this.enemy = this.game.add.sprite(450,400/2-20,'enemy')
     this.coin1 = this.game.add.sprite(260,400/2-20,'coin')
     this.coin2 = this.game.add.sprite(290,400/2-20,'coin')
@@ -29,23 +35,22 @@ export default class extends Phaser.State {
     this.jumpSound = this.game.add.audio('jump')
 
     game.physics.arcade.enable(this.player)
-    game.physics.arcade.enable(this.ground)
     game.physics.arcade.enable(this.enemy)
 
     this.player.body.gravity.y = 600
     this.player.body.setSize(20,20,0,0)
-
-    this.ground.body.immovable = true
 
     this.player.animations.add('idle',[3,4,5,4],5,true)
 
     this.player.animations.play('idle')
 
     this.cursor = this.game.input.keyboard.createCursorKeys()
+
+
   }
 
   update () {
-    this.game.physics.arcade.collide(this.player,this.ground)
+    this.game.physics.arcade.collide(this.player,this.level)
     this.game.physics.arcade.overlap(this.player,this.enemy)
 
     this.inputs()
@@ -82,6 +87,16 @@ export default class extends Phaser.State {
         this.jumpSound.play()
         this.hasJumped = true
       }
+  }
+
+  loadlevel () {
+    this.level = this.game.add.group()
+    this.level.enableBody = true
+    this.ground = this.game.add.sprite(760/2-160,400/2,'ground',0, this.level)
+    this.wall1 = this.game.add.sprite(760/2-160,400/2-80,'wall',0, this.level)
+    this.wall2 = this.game.add.sprite(760/2+140,400/2-80,'wall',0, this.level)
+    game.physics.arcade.enable(this.level)
+    this.level.setAll('body.immovable', true)
   }
 
   render () {
