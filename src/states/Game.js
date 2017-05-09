@@ -28,9 +28,8 @@ export default class extends Phaser.State {
     this.loadlevel()
 
     this.enemy = this.game.add.sprite(450,400/2-20,'enemy')
-    this.coin1 = this.game.add.sprite(260,400/2-20,'coin')
-    this.coin2 = this.game.add.sprite(290,400/2-20,'coin')
-    this.coin3 = this.game.add.sprite(320,400/2-20,'coin')
+
+    this.putCoinsOnLevel()
 
     this.jumpSound = this.game.add.audio('jump')
 
@@ -46,11 +45,11 @@ export default class extends Phaser.State {
 
     this.cursor = this.game.input.keyboard.createCursorKeys()
 
-
   }
 
   update () {
     this.game.physics.arcade.collide(this.player,this.level)
+    this.game.physics.arcade.overlap(this.player,this.coins, this.takeCoin)
     this.game.physics.arcade.overlap(this.player,this.enemy)
 
     this.inputs()
@@ -81,6 +80,24 @@ export default class extends Phaser.State {
     }
   }
 
+  putCoinsOnLevel () {
+      this.coins = this.game.add.group()
+      this.coin1 = this.game.add.sprite(260,400/2-20,'coin',0,this.coins)
+      this.coin2 = this.game.add.sprite(290,400/2-20,'coin',0,this.coins)
+      this.coin3 = this.game.add.sprite(320,400/2-20,'coin',0,this.coins)
+      this.coins.enableBody = true
+      game.physics.arcade.enable(this.coins)
+  }
+
+  takeCoin (player, coin) {
+    //TODO Reproduir coin
+
+    console.log('moneda tocada')
+    coin.body.enable = false
+    game.add.tween(coin).to({width:0},100).start()
+
+  }
+
   jumpPlayer () {
       if(!this.hasJumped) {
         this.player.body.velocity.y = -220
@@ -93,9 +110,9 @@ export default class extends Phaser.State {
     this.level = this.game.add.group()
     this.level.enableBody = true
     this.ground = this.game.add.sprite(760/2-160,400/2,'ground',0, this.level)
-    this.wall1 = this.game.add.sprite(760/2-160,400/2-80,'wall',0, this.level)
+    this.wall1 = this.game.add.sprite(760/2-160,480/2-80,'wall',0, this.level)
     this.wall2 = this.game.add.sprite(760/2+140,400/2-80,'wall',0, this.level)
-    game.physics.arcade.enable(this.level)
+    // game.physics.arcade.enable(this.level)
     this.level.setAll('body.immovable', true)
   }
 
